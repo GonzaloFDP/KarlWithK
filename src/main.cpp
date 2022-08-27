@@ -86,7 +86,7 @@ void opcontrol() {
 		}
 
 		if(runConveyor == true){
-			Conveyor.move_velocity(200);
+			Floppy.move_velocity(200);
 		}
 		double power = master.get_analog(ANALOG_LEFT_Y);
 		double turn = master.get_analog(ANALOG_RIGHT_X);
