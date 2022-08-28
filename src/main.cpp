@@ -76,9 +76,43 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+ void intake(void *param) {
+   Floppy.move_velocity(floppySpeed);
+   pros::delay(30);
+ }
+
+ void temperature(void *param) {
+	 if(BLmotor.get_temperature()>hottest){
+		 hottest = BLmotor.get_temperature();
+		 screenPrintString(1, 0, "BLmotor");
+	 }
+	 if(FLmotor.get_temperature()>hottest){
+		 hottest = FLmotor.get_temperature();
+		 screenPrintString(1, 0, "FLmotor");
+	 }
+	 if(BRmotor.get_temperature()>hottest){
+		 hottest = BRmotor.get_temperature();
+		 screenPrintString(1, 0, "BRmotor");
+	 }
+	 if(FRmotor.get_temperature()>hottest){
+		 hottest = FRmotor.get_temperature();
+		 screenPrintString(1, 0, "FRmotor");
+	 }
+	 if(Floppy.get_temperature()>hottest){
+		 hottest = Floppy.get_temperature();
+		 screenPrintString(1, 0, "Floppy");
+	 }
+	 if(Flywheel.get_temperature()>hottest)
+	 hottest = Flywheel.get_temperature();{
+		 screenPrintString(1, 0, "Flywheel");
+	 }
+ }
+
 void opcontrol() {
 	bool  runConveyor = false;
 	while (true) {
+		pros::Task intake_task(intake);
+		pros::Task temp_task(temperature);
 		if(runConveyor==false && master.get_digital_new_press(DIGITAL_X)){
 			runConveyor = true;
 		} else if(runConveyor==true && master.get_digital_new_press(DIGITAL_X)){
@@ -86,10 +120,14 @@ void opcontrol() {
 		}
 
 		if(runConveyor == true){
-			Floppy.move_velocity(200);
+			floppySpeed = 600;
+		} else {
+			floppySpeed = 0;
 		}
 		double power = master.get_analog(ANALOG_LEFT_Y);
 		double turn = master.get_analog(ANALOG_RIGHT_X);
-		drive(speedScaling(power-turn),power+turn);
+		drive(cubicSpeedScaling(power-turn),cubicSpeedScaling(power+turn));
+		master.clear();
+		pros::delay(20);
 	}
 }
