@@ -3,6 +3,8 @@
 
 //Important Constants
 const double wheelCircumfrence = 5.6*3.14159265;
+ int floppySpeed = 0;
+ int hottest = 0;
 
 
 
@@ -29,8 +31,14 @@ void drive(int right, int left){
   BRmotor.move_velocity(right);
 }
 
-double speedScaling(int input){
+double linearSpeedScaling(int input){
   double output = (input * 200)/127;
+  return output;
+}
+
+double cubicSpeedScaling(int input){
+  //y = ((x)^3)*(200/(127)^3)
+  double output = (input*input*input)*(200/(127*127*127));
   return output;
 }
 
@@ -56,10 +64,12 @@ int counter = 0;
 
 int autonSelector(){
   while(true){
-    master.clear();
+    screenPrintString(1, 0, autons[counter]);
     if(master.get_digital_new_press(DIGITAL_RIGHT)){
+      master.clear();
       counter = (counter + 1 + len) % len;
     } else if(master.get_digital_new_press(DIGITAL_LEFT)){
+      master.clear();
       counter = (counter - 1 + len) % len;
     }
     screenPrintString(1,0,autons[counter]);
