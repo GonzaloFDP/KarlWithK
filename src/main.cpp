@@ -24,6 +24,9 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	Flywheel.set_brake_mode(MOTOR_BRAKE_COAST);
+	Flywheel_Two.set_brake_mode(MOTOR_BRAKE_COAST);
+	Floppy.set_brake_mode(MOTOR_BRAKE_COAST);
 	autonSelector();
 }
 
@@ -81,6 +84,12 @@ void autonomous() {
    pros::delay(30);
  }
 
+ void flywheel(void *param) {
+   Flywheel.move_velocity(flySpeed);
+	 Flywheel_Two.move_velocity(flySpeed);
+   pros::delay(30);
+ }
+
  void temperature(void *param) {
 	 if(BLmotor.get_temperature()>hottest){
 		 hottest = BLmotor.get_temperature();
@@ -110,9 +119,11 @@ void autonomous() {
 
 void opcontrol() {
 	bool  runConveyor = false;
+	bool  runFlywheel = false;
 	while (true) {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
+		pros::Task fly_task(flywheel);
 		if(runConveyor==false && master.get_digital_new_press(DIGITAL_X)){
 			runConveyor = true;
 		} else if(runConveyor==true && master.get_digital_new_press(DIGITAL_X)){
@@ -120,9 +131,22 @@ void opcontrol() {
 		}
 
 		if(runConveyor == true){
-			floppySpeed = 600;
+			floppySpeed = 250;
 		} else {
 			floppySpeed = 0;
+		}
+
+
+		if(runFlywheel==false && master.get_digital_new_press(DIGITAL_Y)){
+			runFlywheel = true;
+		} else if(runFlywheel==true && master.get_digital_new_press(DIGITAL_Y)){
+			runFlywheel = false;
+		}
+
+		if(runFlywheel == true){
+			flySpeed = 480;
+		} else {
+			flySpeed = 0;
 		}
 		double power = master.get_analog(ANALOG_LEFT_Y);
 		double turn = master.get_analog(ANALOG_RIGHT_X);
