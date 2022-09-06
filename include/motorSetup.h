@@ -6,6 +6,7 @@
 #define BL_MOTOR 11
 #define FLOPPY 4
 #define FLYWHEEL 6
+#define FLYWHEEL_TWO 7
 
 pros::Controller master (pros::E_CONTROLLER_MASTER);
 
@@ -16,3 +17,4 @@ pros::Motor BRmotor(BR_MOTOR, true);
 
 pros::Motor Floppy(FLOPPY, MOTOR_GEARSET_6);
 pros::Motor Flywheel(FLYWHEEL, MOTOR_GEARSET_6);
+pros::Motor Flywheel_Two(FLYWHEEL_TWO, MOTOR_GEARSET_6,true);

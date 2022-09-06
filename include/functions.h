@@ -4,6 +4,7 @@
 //Important Constants
 const double wheelCircumfrence = 5.6*3.14159265;
  int floppySpeed = 0;
+ int flySpeed = 0;
  int hottest = 0;
 
 
