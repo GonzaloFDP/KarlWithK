@@ -117,6 +117,13 @@ void autonomous() {
 	 }
  }
 
+
+
+void odomContainer(){
+  m_odom.update((FLmotor.get_position()+BLmotor.get_position())/2, (FRmotor.get_position()+BRmotor.get_position())/2);
+  pros::screen::print(TEXT_MEDIUM, 3, "X: %d, Y: %d, H: %d", m_odom.gPos.first,m_odom.gPos.second, m_odom.odomHeading);
+}
+
 void opcontrol() {
 
 	bool  runConveyor = false;
@@ -128,6 +135,8 @@ void opcontrol() {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
 		pros::Task fly_task(flywheel);
+		pros::Task odom_task(odomContainer);
+
 		if(runConveyor==false && master.get_digital_new_press(DIGITAL_X)){
 			runConveyor = true;
 		} else if(runConveyor==true && master.get_digital_new_press(DIGITAL_X)){
