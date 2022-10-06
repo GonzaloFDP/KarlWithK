@@ -118,8 +118,12 @@ void autonomous() {
  }
 
 void opcontrol() {
+
 	bool  runConveyor = false;
 	bool  runFlywheel = false;
+	bool indexerOut = false;
+	bool intakeRev = false;
+	double intakeDir = 1;
 	while (true) {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
@@ -131,26 +135,46 @@ void opcontrol() {
 		}
 
 		if(runConveyor == true){
-			floppySpeed = 250;
+			floppySpeed = 180*intakeDir;
 		} else {
 			floppySpeed = 0;
 		}
 
+		if (intakeRev == false && master.get_digital_new_press(DIGITAL_B)){
+			intakeRev = true;
+			intakeDir = -0.5;
+		} else if(intakeRev==true && master.get_digital_new_press(DIGITAL_B)){
+			intakeRev = false;
+			intakeDir = 1;
+		}
 
 		if(runFlywheel==false && master.get_digital_new_press(DIGITAL_Y)){
 			runFlywheel = true;
 		} else if(runFlywheel==true && master.get_digital_new_press(DIGITAL_Y)){
 			runFlywheel = false;
+
 		}
 
 		if(runFlywheel == true){
-			flySpeed = 480;
+			flySpeed = 550;
 		} else {
 			flySpeed = 0;
+
 		}
+
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) && indexerOut == false){
+			indexerOut = true;
+			diskIndexer.set_value(true);
+			pros::delay(200);
+			diskIndexer.set_value(false);
+			indexerOut = false;
+		} else {
+
+		}
+
 		double power = master.get_analog(ANALOG_LEFT_Y);
 		double turn = master.get_analog(ANALOG_RIGHT_X);
-		drive(cubicSpeedScaling(power-turn),cubicSpeedScaling(power+turn));
+		drive(cubicSpeedScaling(power)-turn,cubicSpeedScaling(power)+turn);
 		master.clear();
 		pros::delay(20);
 	}
