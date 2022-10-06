@@ -32,14 +32,14 @@ void drive(int right, int left){
   BRmotor.move_velocity(right);
 }
 
-double linearSpeedScaling(int input){
-  double output = (input * 200)/127;
+int linearSpeedScaling(int input){
+  int output = (input * 200)/127;
   return output;
 }
 
-double cubicSpeedScaling(int input){
+int cubicSpeedScaling(int input){
   //y = ((x)^3)*(200/(127)^3)
-  double output = (input*input*input)*(200/(127*127*127));
+  int output = (input*input*input)*(0.0001);
   return output;
 }
 
