@@ -1,8 +1,8 @@
 #include "main.h"
 #include "motorSetup.h"
+#include "odometry.h"
 
 //Important Constants
-const double wheelCircumfrence = 5.6*3.14159265;
  int floppySpeed = 0;
  int flySpeed = 0;
  int hottest = 0;
@@ -46,17 +46,17 @@ int cubicSpeedScaling(int input){
 
 //////////////MISC functions/////////////////////////
 
-//Function that prints a String to the Brain
+//Function that prints a String to the controller
 void screenPrintString(int row, int col, std::string i){
   master.print(row,col,"%s",i.c_str());
 }
 
-double intToTicks(double dist){
-  double ticks = dist;
-  ticks /= wheelCircumfrence;
-  ticks *= 900;
-  return ticks;
+
+
+double gearCalc(double input){
+  double output = (7*input)/5
 }
+
 //Auton Selector
 int len = 2;
 std::string autons[2] = {"auton_1", "auton_2"};

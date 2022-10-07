@@ -24,6 +24,8 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	driveInfo karl(4,15.25);
+	
 	Flywheel.set_brake_mode(MOTOR_BRAKE_COAST);
 	Flywheel_Two.set_brake_mode(MOTOR_BRAKE_COAST);
 	Floppy.set_brake_mode(MOTOR_BRAKE_COAST);
