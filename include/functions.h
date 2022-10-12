@@ -1,6 +1,5 @@
 #include "main.h"
 #include "motorSetup.h"
-#include "odometry.h"
 
 //Important Constants
  int floppySpeed = 0;
@@ -51,10 +50,16 @@ void screenPrintString(int row, int col, std::string i){
   master.print(row,col,"%s",i.c_str());
 }
 
+//Converts radians -> degrees
+double radToDeg(double rad){
+  double deg = rad*(180/M_PI);
+  return deg;
+}
 
-
-double gearCalc(double input){
-  double output = (7*input)/5
+//Converts degrees -> radians
+double degToRad(double deg){
+  double rad = deg*(M_PI/180);
+  return rad;
 }
 
 //Auton Selector
@@ -81,6 +86,25 @@ int autonSelector(){
   return counter;
 }
 
+//Reset Robot to Base Position
+void totalReset(){
+  FLmotor.tare_position();
+  FRmotor.tare_position();
+  BLmotor.tare_position();
+  BRmotor.tare_position();
+  diskIndexer.set_value(true);
+	expansion.set_value(true);
+}
+
+//Motor reset
+void motorReset(){
+  FLmotor.tare_position();
+  FRmotor.tare_position();
+  BLmotor.tare_position();
+  BRmotor.tare_position();
+}
+
+//PD (Proportional Derivative) loop
 void moveDistance(int dist, int kP, int kD){
   FLmotor.tare_position();
   FRmotor.tare_position();

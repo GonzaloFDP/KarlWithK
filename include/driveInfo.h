@@ -1,4 +1,5 @@
 #include "main.h"
+#include "functions.h"
 
 class driveInfo{
     public:
@@ -13,7 +14,7 @@ class driveInfo{
 
         double wheelDia;
         double wheelCirc;
-        double gearR = 7/5;
+        double gearR = 7.0/5;
         double Left2Cent;
         double Right2Cent;
         double ticksInRev = 900;
@@ -28,4 +29,4 @@ class driveInfo{
         }
 
         
-}
+};

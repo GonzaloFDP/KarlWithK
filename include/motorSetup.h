@@ -1,5 +1,6 @@
 #include "main.h"
 #include "odom.h"
+#include "pros/adi.hpp"
 
 #define FR_MOTOR 10
 #define FL_MOTOR 20
@@ -23,7 +24,7 @@ pros::Motor Flywheel(FLYWHEEL, MOTOR_GEARSET_6);
 pros::Motor Flywheel_Two(FLYWHEEL_TWO, MOTOR_GEARSET_6,true);
 
 pros::ADIDigitalOut diskIndexer ('A');
-
+pros::ADIDigitalOut expansion ('B');
 
 //change these
 driveTrain m_drive = driveTrain(3.25, 11.5);

@@ -1,5 +1,6 @@
 #include "main.h"
 #include "autonomoose.h"
+#include "pros/misc.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -25,7 +26,7 @@ void on_center_button() {
  */
 void initialize() {
 	driveInfo karl(4,15.25);
-	
+	totalReset();
 	Flywheel.set_brake_mode(MOTOR_BRAKE_COAST);
 	Flywheel_Two.set_brake_mode(MOTOR_BRAKE_COAST);
 	Floppy.set_brake_mode(MOTOR_BRAKE_COAST);
@@ -181,6 +182,10 @@ void opcontrol() {
 			indexerOut = false;
 		} else {
 
+		}
+
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+			expansion.set_value(false);
 		}
 
 		double power = master.get_analog(ANALOG_LEFT_Y);
