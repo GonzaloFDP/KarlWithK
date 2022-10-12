@@ -10,7 +10,6 @@ class karlOdom {
             gPos.second = 0;
         }
         std::pair<double,double> gPos;
-        std::pair<double,double> localOff;
 
         double prevLeft = 0;
         double prevRight = 0;
@@ -23,8 +22,12 @@ class karlOdom {
         double prevOrient = startOrientation;
         double orientation;
         double deltaOrient;
+        double offset;
+        double yOffset;
+        double xOffset;
 
         void movement(double leftPos, double rightPos){
+            std::pair<double,double> localOff;
             //1 rev = 900 ticks
 
             //find how much the wheels have move since the last time movement was checked
@@ -44,7 +47,14 @@ class karlOdom {
                 localOff.first = 0;
                 localOff.second = rightDelta;
             } else {
+              offset = 2 * (sin(deltaOrient/2.0));
+              yOffset = offset * ((rightDelta/deltaOrient)+karlDrive.Right2Cent);
+              xOffset = offset; //* front/back distance from center of robot to tracking wheel
+              localOff.first += xOffset;
+              localOff.second += yOffset;
             }
+            gPos.first += localOff.first;
+            gPos.second += localOff.second;
         }
 
         double getOrientDeg(){

@@ -17,6 +17,7 @@ class driveInfo{
         double gearR = 7.0/5;
         double Left2Cent;
         double Right2Cent;
+        double Back2Cent;
         double ticksInRev = 900;
 
 
@@ -28,5 +29,5 @@ class driveInfo{
             return ticks;
         }
 
-        
+
 };
