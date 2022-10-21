@@ -21,12 +21,22 @@ class driveInfo{
         double ticksInRev = 900;
 
 
+        //Relates the distance you want the robot to move to the AMOUNT OF ENCODER TICKS THE MOTOR NEEDS TO TURN
         double distToTicks(double dist){
             double ticks = dist;
             ticks /= wheelCirc;
             ticks *= ticksInRev;
             ticks /= gearR;
             return ticks;
+        }
+
+        //Returns ticks to move in order to reach a certain direction
+        double degToDist(double degrees){
+            double angleRatio = degrees/360; //ratio of the degrees to turn -> degrees in a circle (360)
+            double dist = wheelCirc * angleRatio; //inches needed to turn to a certain orientation (clockwise);
+            double ticks = distToTicks(dist);
+            return ticks;
+            
         }
 
 

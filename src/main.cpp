@@ -2,6 +2,8 @@
 #include "autonomoose.h"
 #include "pros/misc.h"
 
+driveInfo karl(4,15.25);
+
 /**
  * A callback function for LLEMU's center button.
  *
@@ -25,7 +27,11 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	driveInfo karl(4,15.25);
+	//pros::delay(5000);
+	FLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	FRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	BLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	BRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	totalReset();
 	Flywheel.set_brake_mode(MOTOR_BRAKE_COAST);
 	Flywheel_Two.set_brake_mode(MOTOR_BRAKE_COAST);
@@ -64,8 +70,9 @@ void competition_initialize() {}
  */
 void autonomous() {
 	switch (counter) {
-		case 0: auton1();
-		case 1: auton2();
+		case 0: rollerOnly(karl);
+		case 1: rollerPreloadLeft(karl);
+		case 2: rollerPreloadRight(karl);
 	}
 }
 
@@ -128,12 +135,16 @@ void odomContainer(){
 }
 
 void opcontrol() {
-
+	//pros::delay(3000);
+	//moveDistance(900, 0.1, 0, 2000);
+	//pros::delay(3000);
 	bool  runConveyor = false;
 	bool  runFlywheel = false;
 	bool indexerOut = false;
 	bool intakeRev = false;
 	double intakeDir = 1;
+	//rollerOnly(karl);
+	turnDistance(karl.degToDist(90),0.35,0.1,5000);
 	while (true) {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
@@ -168,7 +179,7 @@ void opcontrol() {
 		}
 
 		if(runFlywheel == true){
-			flySpeed = 550;
+			flySpeed = 400;
 		} else {
 			flySpeed = 0;
 
