@@ -5,8 +5,6 @@
  int floppySpeed = 0;
  int flySpeed = 0;
  int hottest = 0;
- double driveKP = 0.125;
- double driveKD = 0.02;
 
 
 
@@ -66,8 +64,8 @@ double degToRad(double deg){
 }
 
 //Auton Selector
-int len = 3;
-std::string autons[3] = {"rollerOnly", "rollerPreloadLeft", "rollerPreloadRight"};
+int len = 5;
+std::string autons[5] = {"rollerOnlyLeft", "rollerOnlyRight", "rollerLowLeft", "rollerLowRight", "progSkills"};
 int counter = 0;
 
 
@@ -96,7 +94,7 @@ void totalReset(){
   BLmotor.tare_position();
   BRmotor.tare_position();
   diskIndexer.set_value(false);
-	expansion.set_value(true);
+	expansion.set_value(false);
 }
 
 //Motor reset
@@ -105,6 +103,13 @@ void motorReset(){
   FRmotor.tare_position();
   BLmotor.tare_position();
   BRmotor.tare_position();
+}
+
+void brake(){
+  FLmotor.move_velocity(0);
+  FRmotor.move_velocity(0);
+  BLmotor.move_velocity(0);
+  BRmotor.move_velocity(0);
 }
 
 //PD (Proportional Derivative) loop
@@ -205,19 +210,3 @@ void turnDistance(double ticks,double kP, double kD, int waitTime){
   }
 }
 
-void turnHehe(double ticks,double kP, double kD, int waitTime){
-  FLmotor.tare_position();
-  FRmotor.tare_position();
-  BLmotor.tare_position();
-  BRmotor.tare_position();
-
-  double avgLeftSide = (FLmotor.get_position()+BLmotor.get_position())/2;
-  double avgRightSide = (FRmotor.get_position()+BRmotor.get_position())/2;
-
-  while(true){
-    double leftMotorPower = (ticks-avgLeftSide)/2;
-
-    drive(-1*leftMotorPower,leftMotorPower);
-    pros::delay(20);
-  }
-}

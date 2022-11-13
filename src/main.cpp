@@ -70,9 +70,16 @@ void competition_initialize() {}
  */
 void autonomous() {
 	switch (counter) {
-		case 0: rollerOnly(karl);
-		case 1: rollerPreloadLeft(karl);
-		case 2: rollerPreloadRight(karl);
+		case 0: rollerOnlyLeft(karl);
+			break;
+		case 1: rollerOnlyRight(karl);
+		break;
+		case 2: rollerPreloadLOWLeft(karl);
+		break;
+		case 3: rollerPreloadLOWRight(karl);
+		break;
+		case 4: progSkills(karl);
+		break;
 	}
 }
 
@@ -143,8 +150,7 @@ void opcontrol() {
 	bool indexerOut = false;
 	bool intakeRev = false;
 	double intakeDir = 1;
-	//rollerOnly(karl);
-	turnDistance(karl.degToDist(90),0.35,0.1,5000);
+	//rollerPreloadLeft(karl);
 	while (true) {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
@@ -179,7 +185,7 @@ void opcontrol() {
 		}
 
 		if(runFlywheel == true){
-			flySpeed = 400;
+			flySpeed = 480;
 		} else {
 			flySpeed = 0;
 
@@ -196,7 +202,7 @@ void opcontrol() {
 		}
 
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
-			expansion.set_value(false);
+			expansion.set_value(true);
 		}
 
 		double power = master.get_analog(ANALOG_LEFT_Y);
