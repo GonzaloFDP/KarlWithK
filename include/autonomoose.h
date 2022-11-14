@@ -65,7 +65,7 @@ void rollerPreloadLOWRight(driveInfo karlDrive){
     rollerOnlyRight(karlDrive);
     brake();
     Flywheel.move_velocity(400);
-    pros::delay(6000);
+    pros::delay(1500);
     for(int i = 0; i < 2; i++){
 		diskIndexer.set_value(true);
 		pros::delay(100);
@@ -80,7 +80,7 @@ void rollerPreloadLOWLeft(driveInfo karlDrive){
     turnDistance(karlDrive.degToTicks(90), karlDrive.turningKP, karlDrive.turningKD, 1800);
     brake();
     Flywheel.move_velocity(600);
-    pros::delay(6000);
+    pros::delay(1500);
     for(int i = 0; i < 2; i++){
 		diskIndexer.set_value(true);
 		pros::delay(100);

@@ -1,6 +1,8 @@
 #include "main.h"
 #include "autonomoose.h"
 #include "pros/misc.h"
+#include "pros/screen.h"
+#include "pros/screen.hpp"
 
 driveInfo karl(4,15.25);
 
@@ -28,6 +30,7 @@ void on_center_button() {
  */
 void initialize() {
 	//pros::delay(5000);
+	
 	FLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	FRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	BLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -102,60 +105,58 @@ void autonomous() {
  }
 
  void flywheel(void *param) {
-   Flywheel.move_velocity(flySpeed);
-	 Flywheel_Two.move_velocity(flySpeed);
-   pros::delay(30);
+	if(runFlywheel == true){
+   		flywheelCorrector(500, karl.flywheelKP, karl.flywheelKD);
+	} else if (runFlywheel == false){
+		flywheelCorrector(0, karl.flywheelKP, karl.flywheelKD);
+	}
  }
 
  void temperature(void *param) {
 	 if(BLmotor.get_temperature()>hottest){
 		 hottest = BLmotor.get_temperature();
-		 screenPrintString(1, 0, "BLmotor");
+		 pros::screen::print(TEXT_MEDIUM, 1, "BL");
 	 }
 	 if(FLmotor.get_temperature()>hottest){
 		 hottest = FLmotor.get_temperature();
-		 screenPrintString(1, 0, "FLmotor");
+		 pros::screen::print(TEXT_MEDIUM, 1, "FL");
 	 }
 	 if(BRmotor.get_temperature()>hottest){
 		 hottest = BRmotor.get_temperature();
-		 screenPrintString(1, 0, "BRmotor");
+		 pros::screen::print(TEXT_MEDIUM, 1, "BR");
 	 }
 	 if(FRmotor.get_temperature()>hottest){
 		 hottest = FRmotor.get_temperature();
-		 screenPrintString(1, 0, "FRmotor");
+		 pros::screen::print(TEXT_MEDIUM, 1, "FR");
 	 }
 	 if(Floppy.get_temperature()>hottest){
 		 hottest = Floppy.get_temperature();
-		 screenPrintString(1, 0, "Floppy");
+		 pros::screen::print(TEXT_MEDIUM, 1, "Floppy");
 	 }
 	 if(Flywheel.get_temperature()>hottest)
 	 hottest = Flywheel.get_temperature();{
-		 screenPrintString(1, 0, "Flywheel");
+		 pros::screen::print(TEXT_MEDIUM,1,"Flywheel (%d)", FLYWHEEL);
+	 }
+	 if(Flywheel_Two.get_temperature()>hottest)
+	 hottest = Flywheel_Two.get_temperature();{
+		 pros::screen::print(TEXT_MEDIUM,1,"Flywheel 2 (%d)", FLYWHEEL_TWO);
 	 }
  }
 
 
 
-void odomContainer(){
-  m_odom.update((FLmotor.get_position()+BLmotor.get_position())/2, (FRmotor.get_position()+BRmotor.get_position())/2);
-  pros::screen::print(TEXT_MEDIUM, 3, "X: %d, Y: %d, H: %d", m_odom.gPos.first,m_odom.gPos.second, m_odom.odomHeading);
+void flywheelChecker(){
+  //m_odom.update((FLmotor.get_position()+BLmotor.get_position())/2, (FRmotor.get_position()+BRmotor.get_position())/2);
+  //pros::screen::print(TEXT_MEDIUM, 3, "X: %d, Y: %d, H: %d", m_odom.gPos.first,m_odom.gPos.second, m_odom.odomHeading);
+  pros::screen::print(TEXT_MEDIUM, 3, "Flywheel (%d) Speed: %d  Flywheel 2 (%d) Speed: %d", FLYWHEEL, Flywheel.get_actual_velocity(), FLYWHEEL_TWO, Flywheel_Two.get_actual_velocity());
 }
 
 void opcontrol() {
-	//pros::delay(3000);
-	//moveDistance(900, 0.1, 0, 2000);
-	//pros::delay(3000);
-	bool  runConveyor = false;
-	bool  runFlywheel = false;
-	bool indexerOut = false;
-	bool intakeRev = false;
-	double intakeDir = 1;
-	//rollerPreloadLeft(karl);
 	while (true) {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
 		pros::Task fly_task(flywheel);
-		pros::Task odom_task(odomContainer);
+		pros::Task flyPrint_task(flywheelChecker);
 
 		if(runConveyor==false && master.get_digital_new_press(DIGITAL_X)){
 			runConveyor = true;
@@ -181,14 +182,6 @@ void opcontrol() {
 			runFlywheel = true;
 		} else if(runFlywheel==true && master.get_digital_new_press(DIGITAL_Y)){
 			runFlywheel = false;
-
-		}
-
-		if(runFlywheel == true){
-			flySpeed = 480;
-		} else {
-			flySpeed = 0;
-
 		}
 
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) && indexerOut == false){

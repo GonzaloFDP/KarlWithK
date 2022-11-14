@@ -1,10 +1,17 @@
 #include "main.h"
 #include "motorSetup.h"
 
-//Important Constants
- int floppySpeed = 0;
- int flySpeed = 0;
- int hottest = 0;
+//Important Variables
+ double  floppySpeed = 0;
+ double  flySpeed = 0;
+ double  hottest = 0;
+
+//Driver control variables
+  bool  runFlywheel = false;
+	bool  runConveyor = false;
+	bool indexerOut = false;
+	bool intakeRev = false;
+	double intakeDir = 1;
 
 
 
@@ -207,6 +214,30 @@ void turnDistance(double ticks,double kP, double kD, int waitTime){
     drive(rightMotorPower,leftMotorPower);
     pros::delay(20);
     timeElapsed += 20;
+  }
+}
+
+void flywheelCorrector(double targetRPM, double kP, double kD){
+  double currAvgVal = Flywheel.get_actual_velocity()+Flywheel_Two.get_actual_velocity();
+  double error;
+  double prevError = 0;
+  double derivative;
+
+  double tVal = targetRPM;
+
+  while(true){
+     currAvgVal = Flywheel.get_actual_velocity()+Flywheel_Two.get_actual_velocity();
+     error = tVal-currAvgVal;
+     derivative = error-prevError;
+     double motorPower = error * kP + derivative * kD;
+     if(motorPower > 600){
+      motorPower = 600;
+     } else if (motorPower < -600){
+      motorPower = -600;
+     }
+     Flywheel.move_velocity(motorPower);
+     Flywheel_Two.move_velocity(motorPower);
+     pros::delay(20);
   }
 }
 
