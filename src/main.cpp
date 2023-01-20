@@ -77,11 +77,15 @@ void autonomous() {
 			break;
 		case 1: rollerOnlyRight(karl);
 		break;
-		case 2: rollerPreloadLOWLeft(karl);
+		case 2: rollerPreloadLeft(karl);
 		break;
-		case 3: rollerPreloadLOWRight(karl);
+		case 3: rollerShootRight(karl);
 		break;
-		case 4: progSkills(karl);
+		case 4: rollerPreRight(karl);
+		break;
+		case 5: rollerDiscRight(karl);
+		break;
+		case 6: progSkills(karl);
 		break;
 	}
 }
@@ -101,14 +105,31 @@ void autonomous() {
  */
  void intake(void *param) {
    Floppy.move_velocity(floppySpeed);
+   Intake.move_velocity(floppySpeed);
    pros::delay(30);
  }
 
  void flywheel(void *param) {
+	flywheelSpeed = conveyorRange*-600;
+	if(conveyorRange==1){
+	pros::screen::print(pros::E_TEXT_MEDIUM, 5, "long");
+	} else {
+		pros::screen::print(pros::E_TEXT_MEDIUM, 5, "short");
+	}
 	if(runFlywheel == true){
-   		flywheelCorrector(500, karl.flywheelKP, karl.flywheelKD);
+		Flywheel.move_velocity(flywheelSpeed);
+		Flywheel_Two.move_velocity(flywheelSpeed);
+		//Flywheel.move_voltage(flywheelCorrector(flywheelSpeed, karl.flywheelKP));
+	    //Flywheel_Two.move_voltage(flywheelCorrector(flywheelSpeed, karl.flywheelKP));
+   		//Flywheel.move_velocity(flywheelCorrector(-600, karl.flywheelKP, karl.flywheelKD));
+		//Flywheel_Two.move_velocity(flywheelCorrector(-600, karl.flywheelKP, karl.flywheelKD));
 	} else if (runFlywheel == false){
-		flywheelCorrector(0, karl.flywheelKP, karl.flywheelKD);
+		//Flywheel.move_voltage(flywheelCorrector(0, karl.flywheelKP));
+	    //Flywheel_Two.move_voltage(flywheelCorrector(0, karl.flywheelKP));
+		Flywheel.move_velocity(0);
+		Flywheel_Two.move_velocity(0);
+		//Flywheel.move_velocity(flywheelCorrector(0, karl.flywheelKP, karl.flywheelKD));
+		//Flywheel_Two.move_velocity(flywheelCorrector(0, karl.flywheelKP, karl.flywheelKD));
 	}
  }
 
@@ -148,15 +169,23 @@ void autonomous() {
 void flywheelChecker(){
   //m_odom.update((FLmotor.get_position()+BLmotor.get_position())/2, (FRmotor.get_position()+BRmotor.get_position())/2);
   //pros::screen::print(TEXT_MEDIUM, 3, "X: %d, Y: %d, H: %d", m_odom.gPos.first,m_odom.gPos.second, m_odom.odomHeading);
-  pros::screen::print(TEXT_MEDIUM, 3, "Flywheel (%d) Speed: %d  Flywheel 2 (%d) Speed: %d", FLYWHEEL, Flywheel.get_actual_velocity(), FLYWHEEL_TWO, Flywheel_Two.get_actual_velocity());
+  pros::screen::print(TEXT_MEDIUM, 3, "Feel(%d) Spd: %d  Feel2(%d) Spd: %d", FLYWHEEL, (int)Flywheel.get_actual_velocity(), FLYWHEEL_TWO, (int)Flywheel_Two.get_actual_velocity());
 }
 
 void opcontrol() {
+	FLmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+	FRmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+	BLmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+	BRmotor.set_brake_mode(MOTOR_BRAKE_COAST);
 	while (true) {
 		pros::Task intake_task(intake);
 		pros::Task temp_task(temperature);
 		pros::Task fly_task(flywheel);
 		pros::Task flyPrint_task(flywheelChecker);
+
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
+			autonomous();
+		}
 
 		if(runConveyor==false && master.get_digital_new_press(DIGITAL_X)){
 			runConveyor = true;
@@ -165,7 +194,7 @@ void opcontrol() {
 		}
 
 		if(runConveyor == true){
-			floppySpeed = 180*intakeDir;
+			floppySpeed = 200*intakeDir;
 		} else {
 			floppySpeed = 0;
 		}
@@ -176,6 +205,12 @@ void opcontrol() {
 		} else if(intakeRev==true && master.get_digital_new_press(DIGITAL_B)){
 			intakeRev = false;
 			intakeDir = 1;
+		}
+
+		if (conveyorRange == 1 && master.get_digital_new_press(DIGITAL_A)){
+			conveyorRange = 0.75;
+		} else if(conveyorRange==0.75 && master.get_digital_new_press(DIGITAL_A)){
+			conveyorRange = 1;
 		}
 
 		if(runFlywheel==false && master.get_digital_new_press(DIGITAL_Y)){
@@ -194,13 +229,14 @@ void opcontrol() {
 
 		}
 
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)&&master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
 			expansion.set_value(true);
+			expansion2.set_value(true);
 		}
 
 		double power = master.get_analog(ANALOG_LEFT_Y);
 		double turn = master.get_analog(ANALOG_RIGHT_X);
-		drive(cubicSpeedScaling(power)-turn,cubicSpeedScaling(power)+turn);
+		drive(cubicSpeedScaling(power)+turn,cubicSpeedScaling(power)-turn);
 		master.clear();
 		pros::delay(20);
 	}

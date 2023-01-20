@@ -5,6 +5,7 @@
  double  floppySpeed = 0;
  double  flySpeed = 0;
  double  hottest = 0;
+ double prevFlywheelError = 0;
 
 //Driver control variables
   bool  runFlywheel = false;
@@ -12,6 +13,8 @@
 	bool indexerOut = false;
 	bool intakeRev = false;
 	double intakeDir = 1;
+  double conveyorRange = 1;
+  double flywheelSpeed = conveyorRange*-600;
 
 
 
@@ -71,8 +74,8 @@ double degToRad(double deg){
 }
 
 //Auton Selector
-int len = 5;
-std::string autons[5] = {"rollerOnlyLeft", "rollerOnlyRight", "rollerLowLeft", "rollerLowRight", "progSkills"};
+int len = 7;
+std::string autons[7] = {"rollerOnlyLeft", "rollerOnlyRight", "rollerPreloadLeft", "rollerShootRight", "rollerPreloadRight", "rollerDiscRight", "progSkills"};
 int counter = 0;
 
 
@@ -217,27 +220,18 @@ void turnDistance(double ticks,double kP, double kD, int waitTime){
   }
 }
 
-void flywheelCorrector(double targetRPM, double kP, double kD){
-  double currAvgVal = Flywheel.get_actual_velocity()+Flywheel_Two.get_actual_velocity();
+double flywheelCorrector(int targetVoltage, double kP){
+  int currAvgVal = (Flywheel.get_voltage()+Flywheel_Two.get_voltage())/2;
   double error;
-  double prevError = 0;
-  double derivative;
-
-  double tVal = targetRPM;
-
-  while(true){
-     currAvgVal = Flywheel.get_actual_velocity()+Flywheel_Two.get_actual_velocity();
-     error = tVal-currAvgVal;
-     derivative = error-prevError;
-     double motorPower = error * kP + derivative * kD;
-     if(motorPower > 600){
-      motorPower = 600;
-     } else if (motorPower < -600){
-      motorPower = -600;
-     }
-     Flywheel.move_velocity(motorPower);
-     Flywheel_Two.move_velocity(motorPower);
-     pros::delay(20);
+  int tVal = targetVoltage;
+  error = tVal-currAvgVal;
+  double motorPower = error * kP;
+  motorPower += currAvgVal;
+  if(motorPower >12000){
+   motorPower = 12000;
+  } else if (motorPower < -12000){
+   motorPower = -12000;
   }
+  return motorPower;
 }
 

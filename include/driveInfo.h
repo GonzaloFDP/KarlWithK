@@ -27,8 +27,7 @@ class driveInfo{
         double driveKD = 0.02;
         double turningKP = 0.21;
         double turningKD = 0.02;
-        double flywheelKP = 0.0;
-        double flywheelKD = 0.0;
+        double flywheelKP = 0.46;
 
 
         //Relates the distance you want the robot to move to the AMOUNT OF ENCODER TICKS THE MOTOR NEEDS TO TURN
