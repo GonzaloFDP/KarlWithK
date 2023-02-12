@@ -2,7 +2,7 @@
 #include "odometry.h"
 
 void rollerOnlyLeft(driveInfo karlDrive){
-    moveDistance(karlDrive.distToTicks(2), karlDrive.driveKP, karlDrive.driveKD, 700);
+    moveDistance(karlDrive.distToTicks(4), karlDrive.driveKP, karlDrive.driveKD, 700);
     Intake.move_velocity(-50);
     pros::delay(700);
     Intake.move_velocity(0);
@@ -31,12 +31,9 @@ void rollerPreloadLeft(driveInfo karlDrive){
     Flywheel_Two.move_velocity(-500);
     turnDistance(karlDrive.degToTicks(-74), karlDrive.turningKP, karlDrive.turningKD, 2200);  
     brake();
-    for(int i = 0; i < 2; i++){
-		diskIndexer.set_value(true);
-		pros::delay(100);
-		diskIndexer.set_value(false);
-        pros::delay(500);
-    }
+    Indexer.move_velocity(200);
+    pros::delay(2000);
+    Indexer.move_velocity(0);
     Flywheel.move_velocity(0);
     Flywheel_Two.move_velocity(0);
 }
@@ -46,10 +43,10 @@ void rollerShootRight(driveInfo karlDrive){
     
     //moveDistance(karlDrive.distToTicks(7), karlDrive.driveKP, karlDrive.driveKD, 2000);
     //turnDistance(karlDrive.degToTicks(-70), karlDrive.turningKP, karlDrive.turningKD, 1500);
-    Floppy.move_velocity(180);
+    //Floppy.move_velocity(180);
     Intake.move_velocity(180);
     moveDistance(karlDrive.distToTicks(45), karlDrive.driveKP/1.5, karlDrive.driveKD, 2400);
-    Floppy.move_velocity(0);
+    //Floppy.move_velocity(0);
     Intake.move_velocity(0);
     Flywheel.move_velocity(-600);
     Flywheel_Two.move_velocity(-600);
@@ -57,12 +54,9 @@ void rollerShootRight(driveInfo karlDrive){
     turnDistance(karlDrive.degToTicks(85), karlDrive.turningKP, karlDrive.turningKD, 1700);
     moveDistance(karlDrive.distToTicks(-9), karlDrive.driveKP, karlDrive.driveKD, 1000);
     brake();
-    for(int i = 0; i < 3; i++){
-		diskIndexer.set_value(true);
-		pros::delay(100);
-		diskIndexer.set_value(false);
-        pros::delay(500);
-    }
+    Indexer.move_velocity(200);
+    pros::delay(2000);
+    Indexer.move_velocity(0);
     Flywheel.move_velocity(0);
     Flywheel_Two.move_velocity(0);
 }
@@ -72,10 +66,10 @@ void rollerDiscRight(driveInfo karlDrive){
     
     //moveDistance(karlDrive.distToTicks(7), karlDrive.driveKP, karlDrive.driveKD, 2000);
     //turnDistance(karlDrive.degToTicks(-70), karlDrive.turningKP, karlDrive.turningKD, 1500);
-    Floppy.move_velocity(180);
+   // Floppy.move_velocity(180);
     Intake.move_velocity(180);
     moveDistance(karlDrive.distToTicks(40), karlDrive.driveKP/1.5, karlDrive.driveKD, 2400);
-    Floppy.move_velocity(0);
+    //Floppy.move_velocity(0);
     Intake.move_velocity(0);
     brake();
 }
@@ -87,12 +81,9 @@ void rollerPreRight(driveInfo karlDrive){
     pros::delay(2000);
     turnDistance(160, karlDrive.turningKP*2, karlDrive.turningKD, 3400);
     brake();
-    for(int i = 0; i < 2; i++){
-		diskIndexer.set_value(true);
-		pros::delay(100);
-		diskIndexer.set_value(false);
-        pros::delay(500);
-    }
+    Indexer.move_velocity(200);
+    pros::delay(2000);
+    Indexer.move_velocity(0);
     Flywheel.move_velocity(0);
     Flywheel_Two.move_velocity(0);
 }
@@ -147,6 +138,6 @@ void progSkills(driveInfo karlDrive){
     moveDistance(karlDrive.distToTicks(-10), karlDrive.driveKP, karlDrive.driveKD, 1500);
     turnDistance(karlDrive.degToTicks(15), karlDrive.turningKP, karlDrive.turningKD, 1500);
     pros::delay(6000);
-    expansion.set_value(true);
-	expansion2.set_value(true);
+    expansion.set_value(false);
+	expansion2.set_value(false);
 }

@@ -1,6 +1,7 @@
 #include "main.h"
 #include "autonomoose.h"
 #include "pros/misc.h"
+#include "pros/motors.h"
 #include "pros/screen.h"
 #include "pros/screen.hpp"
 
@@ -30,7 +31,8 @@ void on_center_button() {
  */
 void initialize() {
 	//pros::delay(5000);
-	
+	expansion.set_value(true);
+	expansion2.set_value(true);
 	FLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	FRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	BLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -38,7 +40,7 @@ void initialize() {
 	totalReset();
 	Flywheel.set_brake_mode(MOTOR_BRAKE_COAST);
 	Flywheel_Two.set_brake_mode(MOTOR_BRAKE_COAST);
-	Floppy.set_brake_mode(MOTOR_BRAKE_COAST);
+	Indexer.set_brake_mode(MOTOR_BRAKE_COAST);
 	autonSelector();
 }
 
@@ -104,7 +106,6 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
  void intake(void *param) {
-   Floppy.move_velocity(floppySpeed);
    Intake.move_velocity(floppySpeed);
    pros::delay(30);
  }
@@ -133,6 +134,10 @@ void autonomous() {
 	}
  }
 
+ void indexer(void *param){
+	Indexer.move_velocity(indexerSpeed);
+ }
+
  void temperature(void *param) {
 	 if(BLmotor.get_temperature()>hottest){
 		 hottest = BLmotor.get_temperature();
@@ -150,9 +155,9 @@ void autonomous() {
 		 hottest = FRmotor.get_temperature();
 		 pros::screen::print(TEXT_MEDIUM, 1, "FR");
 	 }
-	 if(Floppy.get_temperature()>hottest){
-		 hottest = Floppy.get_temperature();
-		 pros::screen::print(TEXT_MEDIUM, 1, "Floppy");
+	 if(Indexer.get_temperature()>hottest){
+		 hottest = Indexer.get_temperature();
+		 pros::screen::print(TEXT_MEDIUM, 1, "Indexer");
 	 }
 	 if(Flywheel.get_temperature()>hottest)
 	 hottest = Flywheel.get_temperature();{
@@ -182,8 +187,9 @@ void opcontrol() {
 		pros::Task temp_task(temperature);
 		pros::Task fly_task(flywheel);
 		pros::Task flyPrint_task(flywheelChecker);
+		pros::Task indexer_task(indexer);
 
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
+		if(master.get_digital_new_press(DIGITAL_LEFT)){
 			autonomous();
 		}
 
@@ -201,7 +207,7 @@ void opcontrol() {
 
 		if (intakeRev == false && master.get_digital_new_press(DIGITAL_B)){
 			intakeRev = true;
-			intakeDir = -0.5;
+			intakeDir = -0.6;
 		} else if(intakeRev==true && master.get_digital_new_press(DIGITAL_B)){
 			intakeRev = false;
 			intakeDir = 1;
@@ -219,19 +225,27 @@ void opcontrol() {
 			runFlywheel = false;
 		}
 
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) && indexerOut == false){
-			indexerOut = true;
-			diskIndexer.set_value(true);
-			pros::delay(200);
-			diskIndexer.set_value(false);
-			indexerOut = false;
-		} else {
-
+		if(indexerSpeed == 0 && master.get_digital_new_press(DIGITAL_R1)){
+			indexerSpeed = 200;
+		} else if (indexerSpeed == 200 && master.get_digital_new_press(DIGITAL_R1)){
+			indexerSpeed = 0;
 		}
 
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)&&master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
-			expansion.set_value(true);
-			expansion2.set_value(true);
+		if(master.get_digital_new_press(DIGITAL_R2)){
+			FLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+			FRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+			BLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+			BRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
+		} else if (master.get_digital_new_press(DIGITAL_L1)){
+			FLmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+			FRmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+			BLmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+			BRmotor.set_brake_mode(MOTOR_BRAKE_COAST);
+		}
+
+		if(master.get_digital_new_press(DIGITAL_DOWN)&&master.get_digital_new_press(DIGITAL_L2)){
+			expansion.set_value(false);
+			expansion2.set_value(false);
 		}
 
 		double power = master.get_analog(ANALOG_LEFT_Y);

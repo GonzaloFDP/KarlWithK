@@ -16,6 +16,7 @@
   double conveyorRange = 1;
   double flywheelSpeed = conveyorRange*-600;
 
+  double indexerSpeed = 0;
 
 
 //Driver Control function
