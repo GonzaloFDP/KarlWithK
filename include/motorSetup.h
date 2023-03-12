@@ -6,7 +6,7 @@
 #define FL_MOTOR 10
 #define BR_MOTOR 12
 #define BL_MOTOR 1
-#define INDEXER 4
+#define FLOPPY 4
 #define INTAKE 14
 #define FLYWHEEL 6
 #define FLYWHEEL_TWO 11
@@ -20,14 +20,13 @@ pros::Motor FRmotor(FR_MOTOR, true);
 pros::Motor BLmotor(BL_MOTOR, false);
 pros::Motor BRmotor(BR_MOTOR, true);
 
-pros::Motor Indexer(INDEXER, MOTOR_GEARSET_18, true);
+pros::Motor Floppy(FLOPPY, MOTOR_GEARSET_18, true);
 pros::Motor Intake(INTAKE, MOTOR_GEARSET_18);
 pros::Motor Flywheel(FLYWHEEL, MOTOR_GEARSET_6);
 pros::Motor Flywheel_Two(FLYWHEEL_TWO, MOTOR_GEARSET_6,true);
 
 pros::ADIDigitalOut diskIndexer ('A');
 pros::ADIDigitalOut expansion ('B');
-pros::ADIDigitalOut expansion2('C');
 
 //change these
 driveTrain m_drive = driveTrain(3.25, 11.5);

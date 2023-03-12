@@ -31,8 +31,8 @@ void on_center_button() {
  */
 void initialize() {
 	//pros::delay(5000);
-	expansion.set_value(true);
-	expansion2.set_value(true);
+	diskIndexer.set_value(false);
+	expansion.set_value(false);
 	FLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	FRmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	BLmotor.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -40,7 +40,6 @@ void initialize() {
 	totalReset();
 	Flywheel.set_brake_mode(MOTOR_BRAKE_COAST);
 	Flywheel_Two.set_brake_mode(MOTOR_BRAKE_COAST);
-	Indexer.set_brake_mode(MOTOR_BRAKE_COAST);
 	autonSelector();
 }
 
@@ -107,6 +106,7 @@ void autonomous() {
  */
  void intake(void *param) {
    Intake.move_velocity(floppySpeed);
+   Floppy.move_velocity(floppySpeed);
    pros::delay(30);
  }
 
@@ -134,10 +134,6 @@ void autonomous() {
 	}
  }
 
- void indexer(void *param){
-	Indexer.move_velocity(indexerSpeed);
- }
-
  void temperature(void *param) {
 	 if(BLmotor.get_temperature()>hottest){
 		 hottest = BLmotor.get_temperature();
@@ -155,9 +151,9 @@ void autonomous() {
 		 hottest = FRmotor.get_temperature();
 		 pros::screen::print(TEXT_MEDIUM, 1, "FR");
 	 }
-	 if(Indexer.get_temperature()>hottest){
-		 hottest = Indexer.get_temperature();
-		 pros::screen::print(TEXT_MEDIUM, 1, "Indexer");
+	 if(Floppy.get_temperature()>hottest){
+		 hottest = Floppy.get_temperature();
+		 pros::screen::print(TEXT_MEDIUM, 1, "Floppy");
 	 }
 	 if(Flywheel.get_temperature()>hottest)
 	 hottest = Flywheel.get_temperature();{
@@ -187,9 +183,8 @@ void opcontrol() {
 		pros::Task temp_task(temperature);
 		pros::Task fly_task(flywheel);
 		pros::Task flyPrint_task(flywheelChecker);
-		pros::Task indexer_task(indexer);
 
-		if(master.get_digital_new_press(DIGITAL_LEFT)){
+		if(master.get_digital_new_press(DIGITAL_LEFT) && master.get_digital_new_press(DIGITAL_R2)){
 			autonomous();
 		}
 
@@ -214,8 +209,8 @@ void opcontrol() {
 		}
 
 		if (conveyorRange == 1 && master.get_digital_new_press(DIGITAL_A)){
-			conveyorRange = 0.75;
-		} else if(conveyorRange==0.75 && master.get_digital_new_press(DIGITAL_A)){
+			conveyorRange = 0.6;
+		} else if(conveyorRange==0.6 && master.get_digital_new_press(DIGITAL_A)){
 			conveyorRange = 1;
 		}
 
@@ -225,10 +220,17 @@ void opcontrol() {
 			runFlywheel = false;
 		}
 
-		if(indexerSpeed == 0 && master.get_digital_new_press(DIGITAL_R1)){
-			indexerSpeed = 200;
-		} else if (indexerSpeed == 200 && master.get_digital_new_press(DIGITAL_R1)){
-			indexerSpeed = 0;
+		if(master.get_digital_new_press(DIGITAL_UP)){
+			shootMode();
+		}
+		if(master.get_digital_new_press(DIGITAL_RIGHT)){
+			driveMode();
+		}
+
+		if(master.get_digital_new_press(DIGITAL_R1)){
+			diskIndexer.set_value(true);
+			pros::delay(250);
+			diskIndexer.set_value(false);
 		}
 
 		if(master.get_digital_new_press(DIGITAL_R2)){
@@ -244,8 +246,7 @@ void opcontrol() {
 		}
 
 		if(master.get_digital_new_press(DIGITAL_DOWN)&&master.get_digital_new_press(DIGITAL_L2)){
-			expansion.set_value(false);
-			expansion2.set_value(false);
+			expansion.set_value(true);
 		}
 
 		double power = master.get_analog(ANALOG_LEFT_Y);

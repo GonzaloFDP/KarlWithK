@@ -1,5 +1,6 @@
 #include "main.h"
 #include "motorSetup.h"
+#include "pros/motors.h"
 
 //Important Variables
  double  floppySpeed = 0;
@@ -114,6 +115,20 @@ void motorReset(){
   FRmotor.tare_position();
   BLmotor.tare_position();
   BRmotor.tare_position();
+}
+
+void shootMode(){
+  FLmotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  FRmotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  BLmotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  BRmotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+}
+
+void driveMode(){
+  FLmotor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  FRmotor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  BLmotor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  BRmotor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void brake(){
